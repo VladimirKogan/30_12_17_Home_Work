@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -20,7 +21,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
     public String name, pass;
     private Button back, add;
     private TextView text;
-    private String new_name, new_phone, new_email, new_description;
+    private String new_name, new_phone, new_email, new_description, val;
     private Person p;
     SharedPreferences.Editor editor = new SharedPreferences.Editor() {
         @Override
@@ -75,6 +76,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
     };
     private ListView myList;
     private MyAdapter adapter;
+    private static int counter = 0;
 
 
     @Override
@@ -97,14 +99,14 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
         myList.setAdapter(adapter);
 
 
-        String val = name + " " + pass;
+        val = name + " " + pass;
         boolean x = editors.isEmpty();
         String y;
         if(x)y = "YES";else y="NO";
         if(editors.containsValue(val)){
             editor = editors.get(val);
         }
-        Toast.makeText(this, y+pass, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, y + pass, Toast.LENGTH_LONG).show();
         //load();
 
 
@@ -138,19 +140,22 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                 Toast.makeText(this, new_name, Toast.LENGTH_LONG).show();
                 text.setVisibility(View.GONE);
                 adapter.addPerson(p);
+                Log.d("MY_TAG", p.toString());
                 save();
             }
         }
     }
 
     private void save(){
-        SharedPreferences sharedPreferences = getSharedPreferences("DATA", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(val, MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        editor.putString("NAME", p.getName());
+        editor.putString(val + getString(counter++), p.toString());
+/*        editor.putString("NAME", p.getName());
         editor.putString("PHONE", p.getPhone());
         editor.putString("EMAIL", p.getEmail());
-        editor.putString("DESCR", p.getDescription());
+        editor.putString("DESCR", p.getDescription());*/
         editor.commit();
+        Log.d("MY_TAG", "Saved!!!!!!!");
     }
 
     private void load(){
